@@ -26,7 +26,7 @@ RSpec.describe Borrowing, type: :model do
       it 'prevents user from borrowing same book multiple times when active' do
         create(:borrowing, user: user, book: book)
         duplicate_borrowing = build(:borrowing, user: user, book: book)
-        
+
         expect(duplicate_borrowing).not_to be_valid
         expect(duplicate_borrowing.errors[:user_id]).to include('already has this book borrowed')
       end
@@ -34,7 +34,7 @@ RSpec.describe Borrowing, type: :model do
       it 'allows user to borrow same book again after returning' do
         create(:borrowing, :returned, user: user, book: book)
         new_borrowing = build(:borrowing, user: user, book: book)
-        
+
         expect(new_borrowing).to be_valid
       end
     end
@@ -138,14 +138,14 @@ RSpec.describe Borrowing, type: :model do
         # Create a specific borrowing that's due within 2 days
         user = create(:user)
         book = create(:book)
-        due_soon_borrowing = create(:borrowing, 
-          user: user, 
+        due_soon_borrowing = create(:borrowing,
+          user: user,
           book: book,
           borrowed_at: 12.days.ago,
           due_at: 2.days.from_now,
           status: 'borrowed'
         )
-        
+
         expect(Borrowing.due_soon(3)).to include(due_soon_borrowing)
         expect(Borrowing.due_soon(3)).not_to include(overdue_borrowing, returned_borrowing)
       end
@@ -188,7 +188,7 @@ RSpec.describe Borrowing, type: :model do
       it 'sets book status to checked_out when no copies available' do
         book = create(:book, available_copies: 1, status: 'available')
         create(:borrowing, book: book)
-        
+
         expect(book.reload.status).to eq('checked_out')
         expect(book.available_copies).to eq(0)
       end
@@ -199,7 +199,7 @@ RSpec.describe Borrowing, type: :model do
         book = create(:book, total_copies: 5, available_copies: 4) # Start with 4 since creating borrowing decrements to 3
         borrowing = create(:borrowing, book: book)
         book.reload # Refresh to see decremented value (should be 3)
-        
+
         expect {
           borrowing.update!(returned_at: Time.current, status: 'returned')
         }.to change { book.reload.available_copies }.by(1)
@@ -208,13 +208,13 @@ RSpec.describe Borrowing, type: :model do
       it 'sets book status to available when copies become available' do
         book = create(:book, available_copies: 1, status: 'available') # Will become 0 after borrowing
         borrowing = create(:borrowing, book: book)
-        
+
         # Verify book is checked out after borrowing
         expect(book.reload.status).to eq('checked_out')
         expect(book.available_copies).to eq(0)
-        
+
         borrowing.update!(returned_at: Time.current, status: 'returned')
-        
+
         expect(book.reload.status).to eq('available')
         expect(book.available_copies).to eq(1)
       end
@@ -316,14 +316,14 @@ RSpec.describe Borrowing, type: :model do
   describe 'class methods' do
     describe '.update_overdue_status' do
       it 'updates status to overdue for overdue borrowings' do
-        overdue_borrowing = create(:borrowing, 
-          borrowed_at: 3.weeks.ago, 
-          due_at: 1.week.ago, 
+        overdue_borrowing = create(:borrowing,
+          borrowed_at: 3.weeks.ago,
+          due_at: 1.week.ago,
           status: 'borrowed'
         )
-        current_borrowing = create(:borrowing, 
-          borrowed_at: 1.week.ago, 
-          due_at: 1.week.from_now, 
+        current_borrowing = create(:borrowing,
+          borrowed_at: 1.week.ago,
+          due_at: 1.week.from_now,
           status: 'borrowed'
         )
 
@@ -334,4 +334,4 @@ RSpec.describe Borrowing, type: :model do
       end
     end
   end
-end 
+end

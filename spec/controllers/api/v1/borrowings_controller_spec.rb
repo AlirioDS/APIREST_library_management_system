@@ -33,7 +33,7 @@ RSpec.describe Api::V1::BorrowingsController, type: :controller do
 
       it 'filters by status when provided' do
         overdue_borrowing = create(:borrowing, :overdue)
-        
+
         get :index, params: { status: 'overdue' }
 
         expect(response).to have_http_status(:ok)
@@ -138,7 +138,7 @@ RSpec.describe Api::V1::BorrowingsController, type: :controller do
 
         expect(response).to have_http_status(:created)
         expect(json_response['message']).to eq('Book borrowed successfully')
-        
+
         borrowing_data = json_response['borrowing']
         expect(borrowing_data['user']['id']).to eq(member.id)
         expect(borrowing_data['book']['id']).to eq(book.id)
@@ -220,11 +220,11 @@ RSpec.describe Api::V1::BorrowingsController, type: :controller do
 
         expect(response).to have_http_status(:ok)
         expect(json_response['message']).to eq('Book returned successfully')
-        
+
         borrowing_data = json_response['borrowing']
         expect(borrowing_data['status']).to eq('returned')
         expect(borrowing_data['returned_at']).to be_present
-        
+
         expect(borrowing.reload.status).to eq('returned')
         expect(borrowing.returned_at).to be_present
       end
@@ -289,9 +289,9 @@ RSpec.describe Api::V1::BorrowingsController, type: :controller do
         expect(response).to have_http_status(:ok)
         expect(json_response['user']['id']).to eq(member.id)
         expect(json_response['borrowings'].length).to eq(3)
-        
+
         borrowing_user_ids = json_response['borrowings'].map { |b| b['user']['id'] }.uniq
-        expect(borrowing_user_ids).to eq([member.id])
+        expect(borrowing_user_ids).to eq([ member.id ])
       end
     end
 
@@ -319,9 +319,9 @@ RSpec.describe Api::V1::BorrowingsController, type: :controller do
         expect(response).to have_http_status(:ok)
         expect(json_response['book']['id']).to eq(book.id)
         expect(json_response['borrowings'].length).to eq(3)
-        
+
         borrowing_book_ids = json_response['borrowings'].map { |b| b['book']['id'] }.uniq
-        expect(borrowing_book_ids).to eq([book.id])
+        expect(borrowing_book_ids).to eq([ book.id ])
       end
     end
 
@@ -347,7 +347,7 @@ RSpec.describe Api::V1::BorrowingsController, type: :controller do
 
       borrowing_data = json_response['borrowing']
       expected_fields = %w[
-        id user book borrowed_at due_at returned_at status 
+        id user book borrowed_at due_at returned_at status
         overdue days_until_due days_overdue borrowing_period_days
         created_at updated_at
       ]
@@ -366,9 +366,9 @@ RSpec.describe Api::V1::BorrowingsController, type: :controller do
       get :show, params: { id: borrowing.id }
 
       borrowing_data = json_response['borrowing']
-      expect(borrowing_data['overdue']).to be_in([true, false])
+      expect(borrowing_data['overdue']).to be_in([ true, false ])
       expect(borrowing_data['days_until_due']).to be_a(Integer)
       expect(borrowing_data['days_overdue']).to be_a(Integer)
     end
   end
-end 
+end

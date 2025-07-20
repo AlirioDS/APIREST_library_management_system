@@ -47,4 +47,4 @@ FactoryBot.define do
       author { 'Robert C. Martin' }
     end
   end
-end 
+end

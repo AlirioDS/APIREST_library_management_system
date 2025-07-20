@@ -27,7 +27,7 @@ end
 
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.fixture_paths = ["#{::Rails.root}/spec/fixtures"]
+  config.fixture_paths = [ "#{::Rails.root}/spec/fixtures" ]
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
@@ -64,7 +64,7 @@ RSpec.configure do |config|
   config.include AuthenticationHelpers, type: :controller
   config.include AuthenticationHelpers, type: :request
   config.include ControllerHelpers, type: :controller
-  
+
   # Fix Rails 8 host authorization for request specs
   config.before(:each, type: :request) do
     host! 'localhost'
@@ -79,4 +79,4 @@ RSpec.configure do |config|
       with.library :rails
     end
   end
-end 
+end

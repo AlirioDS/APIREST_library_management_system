@@ -6,4 +6,4 @@ class DashboardPolicy < ApplicationPolicy
   def member?
     user&.member?
   end
-end 
+end

@@ -7,11 +7,11 @@ class CreateUsers < ActiveRecord::Migration[8.0]
       t.string :first_name
       t.string :last_name
       t.datetime :last_signed_in_at
-      
+
       t.timestamps
     end
-    
+
     add_index :users, :email_address, unique: true
     add_index :users, :role
   end
-end 
+end

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe ApplicationController, type: :controller do
   controller do
     before_action :authenticate_user!
-    
+
     def index
       render json: { user_id: current_user&.id }
     end
@@ -43,4 +43,4 @@ RSpec.describe ApplicationController, type: :controller do
       end
     end
   end
-end 
+end

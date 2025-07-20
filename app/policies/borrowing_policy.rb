@@ -28,4 +28,4 @@ class BorrowingPolicy < ApplicationPolicy
       end
     end
   end
-end 
+end

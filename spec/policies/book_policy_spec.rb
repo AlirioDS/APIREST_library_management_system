@@ -346,4 +346,4 @@ RSpec.describe DashboardPolicy, type: :policy do
       expect(DashboardPolicy.new(nil, :dashboard).member?).to be_falsey
     end
   end
-end 
+end

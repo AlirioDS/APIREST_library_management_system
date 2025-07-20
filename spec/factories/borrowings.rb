@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :borrowing do
-    association :user, factory: [:user, :member]
-    association :book, factory: [:book, :available]
+    association :user, factory: [ :user, :member ]
+    association :book, factory: [ :book, :available ]
     borrowed_at { Time.current }
     due_at { 2.weeks.from_now }
     status { 'borrowed' }
@@ -41,4 +41,4 @@ FactoryBot.define do
       due_at { 13.days.from_now }
     end
   end
-end 
+end

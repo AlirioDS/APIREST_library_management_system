@@ -4,7 +4,7 @@ class Api::V1::DashboardController < ApplicationController
   # GET /api/v1/dashboard/librarian
   def librarian
     authorize :dashboard, :librarian?
-    
+
     render json: {
       dashboard: {
         overview: librarian_overview,
@@ -16,10 +16,10 @@ class Api::V1::DashboardController < ApplicationController
     }, status: :ok
   end
 
-  # GET /api/v1/dashboard/member  
+  # GET /api/v1/dashboard/member
   def member
     authorize :dashboard, :member?
-    
+
     render json: {
       dashboard: {
         overview: member_overview,
@@ -37,15 +37,15 @@ class Api::V1::DashboardController < ApplicationController
     {
       total_books: Book.count,
       total_copies: Book.sum(:total_copies),
-      available_books: Book.where(status: 'available').count,
+      available_books: Book.where(status: "available").count,
       borrowed_books: Borrowing.active.count,
       total_members: User.member.count,
       overdue_books: Borrowing.overdue.count,
       books_due_today: Borrowing.active.joins(:book)
-                               .where('due_at::date = ?', Date.current).count,
+                               .where("due_at::date = ?", Date.current).count,
       books_due_this_week: Borrowing.active.joins(:book)
-                                   .where('due_at BETWEEN ? AND ?', 
-                                          Date.current, 
+                                   .where("due_at BETWEEN ? AND ?",
+                                          Date.current,
                                           Date.current + 7.days).count
     }
   end
@@ -53,7 +53,7 @@ class Api::V1::DashboardController < ApplicationController
   def books_due_today
     Borrowing.active
              .includes(:user, :book)
-             .where('due_at::date = ?', Date.current)
+             .where("due_at::date = ?", Date.current)
              .order(:due_at)
              .map { |borrowing| borrowing_summary(borrowing) }
   end
@@ -62,7 +62,7 @@ class Api::V1::DashboardController < ApplicationController
     overdue_borrowings = Borrowing.overdue
                                  .includes(:user, :book)
                                  .group_by(&:user)
-    
+
     overdue_borrowings.map do |user, borrowings|
       {
         user: {
@@ -86,9 +86,9 @@ class Api::V1::DashboardController < ApplicationController
 
   def popular_books
     Book.joins(:borrowings)
-        .group('books.id')
-        .select('books.*, COUNT(borrowings.id) as borrow_count')
-        .order('borrow_count DESC')
+        .group("books.id")
+        .select("books.*, COUNT(borrowings.id) as borrow_count")
+        .order("borrow_count DESC")
         .limit(5)
         .map do |book|
           {
@@ -106,7 +106,7 @@ class Api::V1::DashboardController < ApplicationController
   def member_overview
     user_borrowings = current_user.borrowings
     active_borrowings = user_borrowings.active
-    
+
     {
       total_books_borrowed: user_borrowings.count,
       currently_borrowed: active_borrowings.count,
@@ -137,15 +137,15 @@ class Api::V1::DashboardController < ApplicationController
   def book_recommendations
     # Simple recommendation: Popular books in genres user has borrowed
     borrowed_genres = current_user.borrowed_books.distinct.pluck(:genre).compact
-    
+
     if borrowed_genres.any?
       Book.where(genre: borrowed_genres)
           .where.not(id: current_user.borrowed_books.pluck(:id))
-          .where(status: 'available')
-          .where('available_copies > 0')
+          .where(status: "available")
+          .where("available_copies > 0")
           .joins(:borrowings)
-          .group('books.id')
-          .order('COUNT(borrowings.id) DESC')
+          .group("books.id")
+          .order("COUNT(borrowings.id) DESC")
           .limit(5)
           .map do |book|
             {
@@ -159,10 +159,10 @@ class Api::V1::DashboardController < ApplicationController
     else
       # New user - show most popular books
       Book.joins(:borrowings)
-          .where(status: 'available')
-          .where('available_copies > 0')
-          .group('books.id')
-          .order('COUNT(borrowings.id) DESC')
+          .where(status: "available")
+          .where("available_copies > 0")
+          .group("books.id")
+          .order("COUNT(borrowings.id) DESC")
           .limit(5)
           .map do |book|
             {
@@ -218,4 +218,4 @@ class Api::V1::DashboardController < ApplicationController
       can_renew: borrowing.active? && !borrowing.overdue? # Simple renewal logic
     }
   end
-end 
+end

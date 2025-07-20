@@ -21,7 +21,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
         expect(response).to have_http_status(:ok)
         dashboard = json_response['dashboard']
-        
+
         expect(dashboard).to have_key('overview')
         expect(dashboard).to have_key('books_due_today')
         expect(dashboard).to have_key('overdue_members')
@@ -44,7 +44,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
         books_due_today = json_response['dashboard']['books_due_today']
         expect(books_due_today).to be_an(Array)
-        
+
         if books_due_today.any?
           book_due = books_due_today.first
           expect(book_due).to include('id', 'user', 'book', 'due_at', 'days_until_due')
@@ -56,7 +56,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
         overdue_members = json_response['dashboard']['overdue_members']
         expect(overdue_members).to be_an(Array)
-        
+
         if overdue_members.any?
           overdue_member = overdue_members.first
           expect(overdue_member).to include('user', 'overdue_count', 'total_days_overdue', 'books')
@@ -70,7 +70,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
         recent_borrowings = json_response['dashboard']['recent_borrowings']
         expect(recent_borrowings).to be_an(Array)
         expect(recent_borrowings.length).to be <= 10
-        
+
         if recent_borrowings.any?
           borrowing = recent_borrowings.first
           expect(borrowing).to include('id', 'user', 'book', 'borrowed_at', 'status')
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
         popular_books = json_response['dashboard']['popular_books']
         expect(popular_books).to be_an(Array)
         expect(popular_books.length).to be <= 5
-        
+
         if popular_books.any?
           book = popular_books.first
           expect(book).to include('id', 'title', 'author', 'times_borrowed')
@@ -117,7 +117,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
       create_list(:borrowing, 3, user: member)
       create_list(:borrowing, 2, :returned, user: member)
       create(:borrowing, :overdue, user: member)
-      
+
       # Create some books for recommendations
       create_list(:book, 5, genre: 'Fiction')
       create_list(:book, 3, genre: 'Science')
@@ -131,7 +131,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
         expect(response).to have_http_status(:ok)
         dashboard = json_response['dashboard']
-        
+
         expect(dashboard).to have_key('overview')
         expect(dashboard).to have_key('active_borrowings')
         expect(dashboard).to have_key('borrowing_history')
@@ -153,7 +153,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
         active_borrowings = json_response['dashboard']['active_borrowings']
         expect(active_borrowings).to be_an(Array)
-        
+
         if active_borrowings.any?
           borrowing = active_borrowings.first
           expect(borrowing).to include('id', 'book', 'borrowed_at', 'due_at', 'status')
@@ -167,7 +167,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
         borrowing_history = json_response['dashboard']['borrowing_history']
         expect(borrowing_history).to be_an(Array)
         expect(borrowing_history.length).to be <= 10
-        
+
         if borrowing_history.any?
           borrowing = borrowing_history.first
           expect(borrowing).to include('id', 'book', 'returned_at')
@@ -180,7 +180,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
         recommendations = json_response['dashboard']['recommendations']
         expect(recommendations).to be_an(Array)
         expect(recommendations.length).to be <= 5
-        
+
         if recommendations.any?
           book = recommendations.first
           expect(book).to include('id', 'title', 'author', 'genre', 'available_copies')
@@ -192,7 +192,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
         overview = json_response['dashboard']['overview']
         expect(overview).to have_key('borrowing_limit_reached')
-        expect(overview['borrowing_limit_reached']).to be_in([true, false])
+        expect(overview['borrowing_limit_reached']).to be_in([ true, false ])
       end
     end
 
@@ -220,11 +220,11 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
     before do
       login_user(librarian)
-      
+
       # Create specific test scenario
       @book1 = create(:book, :available, total_copies: 5, available_copies: 3)
       @book2 = create(:book, :available, total_copies: 3, available_copies: 1, status: 'available')
-      
+
       @borrowing1 = create(:borrowing, user: member1, book: @book1, borrowed_at: 1.week.ago)
       @borrowing2 = create(:borrowing, :overdue, user: member2, book: @book2)
       @borrowing3 = create(:borrowing, :due_today, user: member1)
@@ -244,10 +244,10 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
       overview = json_response['dashboard']['overview']
       overdue_members = json_response['dashboard']['overdue_members']
-      
+
       expect(overview['overdue_books']).to eq(Borrowing.overdue.count)
       expect(overdue_members.length).to eq(1) # Only member2 has overdue books
-      
+
       overdue_member = overdue_members.first
       expect(overdue_member['user']['id']).to eq(member2.id)
       expect(overdue_member['overdue_count']).to eq(1)
@@ -258,7 +258,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
       books_due_today = json_response['dashboard']['books_due_today']
       overview = json_response['dashboard']['overview']
-      
+
       expect(overview['books_due_today']).to eq(1)
       expect(books_due_today.length).to eq(1)
       expect(books_due_today.first['id']).to eq(@borrowing3.id)
@@ -267,7 +267,7 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
   describe 'response structure consistency' do
     let(:member) { create(:user, :member) }
-    
+
     before do
       login_user(member)
       create(:borrowing, user: member)
@@ -277,15 +277,15 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
       get :member
 
       dashboard = json_response['dashboard']
-      
+
       # Check overview structure
       overview = dashboard['overview']
       expected_overview_fields = %w[
-        total_books_borrowed currently_borrowed books_returned 
+        total_books_borrowed currently_borrowed books_returned
         overdue_books books_due_soon borrowing_limit_reached
       ]
       expect(overview.keys).to match_array(expected_overview_fields)
-      
+
       # Check active borrowings structure
       if dashboard['active_borrowings'].any?
         borrowing = dashboard['active_borrowings'].first
@@ -310,11 +310,11 @@ RSpec.describe Api::V1::DashboardController, type: :controller do
 
       expect(response).to have_http_status(:ok)
       dashboard = json_response['dashboard']
-      
+
       expect(dashboard['overview']['total_books']).to eq(0)
       expect(dashboard['overview']['borrowed_books']).to eq(0)
       expect(dashboard['books_due_today']).to eq([])
       expect(dashboard['overdue_members']).to eq([])
     end
   end
-end 
+end

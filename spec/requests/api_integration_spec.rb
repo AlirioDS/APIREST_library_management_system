@@ -8,7 +8,7 @@ RSpec.describe 'Library Management API', type: :request do
     describe 'Authentication Flow' do
       it 'allows user registration and login' do
         # Register new member
-        post '/api/v1/auth/register', 
+        post '/api/v1/auth/register',
           params: {
             email_address: 'newmember@library.com',
             password: 'password123',
@@ -282,4 +282,4 @@ RSpec.describe 'Library Management API', type: :request do
   def json_response
     JSON.parse(response.body)
   end
-end 
+end

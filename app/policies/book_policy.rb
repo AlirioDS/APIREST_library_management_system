@@ -59,4 +59,4 @@ class BookPolicy < ApplicationPolicy
   def return_book?
     user.present? # This would be for future return functionality
   end
-end 
+end

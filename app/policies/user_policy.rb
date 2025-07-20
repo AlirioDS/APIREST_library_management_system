@@ -45,4 +45,4 @@ class UserPolicy < ApplicationPolicy
   def change_password?
     user.present? && user == record
   end
-end 
+end

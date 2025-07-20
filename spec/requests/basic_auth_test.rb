@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "Basic Authentication", type: :request do
   describe "POST /api/v1/auth/register" do
     it "creates a new user successfully" do
-      post '/api/v1/auth/register', 
+      post '/api/v1/auth/register',
         params: {
           email_address: 'basic@test.com',
           password: 'password123',
@@ -23,7 +23,7 @@ RSpec.describe "Basic Authentication", type: :request do
     let!(:user) { create(:user, email_address: 'login@test.com', password: 'password123') }
 
     it "logs in existing user successfully" do
-      post '/api/v1/auth/login', 
+      post '/api/v1/auth/login',
         params: {
           email_address: 'login@test.com',
           password: 'password123'
@@ -36,7 +36,7 @@ RSpec.describe "Basic Authentication", type: :request do
     end
 
     it "fails with wrong password" do
-      post '/api/v1/auth/login', 
+      post '/api/v1/auth/login',
         params: {
           email_address: 'login@test.com',
           password: 'wrongpassword'
@@ -60,4 +60,4 @@ RSpec.describe "Basic Authentication", type: :request do
       expect(books.first['title']).to eq('Test Book')
     end
   end
-end 
+end

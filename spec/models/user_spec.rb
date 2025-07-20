@@ -48,7 +48,7 @@ RSpec.describe User, type: :model do
       it 'includes user information in payload' do
         token = user.generate_jwt_token
         payload = User.decode_jwt_token(token)
-        
+
         expect(payload['user_id']).to eq(user.id)
         expect(payload['email']).to eq(user.email_address)
         expect(payload['role']).to eq(user.role)
@@ -122,7 +122,7 @@ RSpec.describe User, type: :model do
       it 'returns only active borrowings' do
         active_borrowing = create(:borrowing, user: member, book: book)
         returned_borrowing = create(:borrowing, :returned, user: member)
-        
+
         expect(member.active_borrowings).to include(active_borrowing)
         expect(member.active_borrowings).not_to include(returned_borrowing)
       end
@@ -172,7 +172,7 @@ RSpec.describe User, type: :model do
       it 'returns only overdue borrowings' do
         overdue_borrowing = create(:borrowing, :overdue, user: member)
         current_borrowing = create(:borrowing, user: member)
-        
+
         expect(member.overdue_borrowings).to include(overdue_borrowing)
         expect(member.overdue_borrowings).not_to include(current_borrowing)
       end
@@ -182,7 +182,7 @@ RSpec.describe User, type: :model do
       it 'returns count of active borrowings' do
         create_list(:borrowing, 3, user: member)
         create(:borrowing, :returned, user: member)
-        
+
         expect(member.borrowings_count).to eq(3)
       end
     end
@@ -194,4 +194,4 @@ RSpec.describe User, type: :model do
       expect(user.email_address).to eq('test@example.com')
     end
   end
-end 
+end

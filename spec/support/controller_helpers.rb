@@ -15,4 +15,4 @@ module ControllerHelpers
     authenticate_as(member)
     member
   end
-end 
+end

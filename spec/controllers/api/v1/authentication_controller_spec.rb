@@ -1,26 +1,26 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::AuthenticationController, type: :controller do
-  # Clean up test data before running any tests  
+  # Clean up test data before running any tests
   before(:all) do
     User.where(email_address: 'test@example.com').destroy_all
   end
-  
+
   describe 'POST #login' do
     let!(:user) { create(:user, email_address: 'test@example.com', password: 'password123') }
 
     context 'with valid credentials' do
       it 'authenticates user and returns JWT tokens' do
-        post :login, params: { 
-          email_address: 'test@example.com', 
-          password: 'password123' 
+        post :login, params: {
+          email_address: 'test@example.com',
+          password: 'password123'
         }
 
         expect(response).to have_http_status(:ok)
         expect(json_response['message']).to eq('Login successful')
         expect(json_response['token']).to be_present
         expect(json_response['refresh_token']).to be_present
-        
+
         user_data = json_response['user']
         expect(user_data['id']).to eq(user.id)
         expect(user_data['email_address']).to eq(user.email_address)
@@ -29,22 +29,22 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
       it 'updates last_signed_in_at timestamp' do
         expect {
-          post :login, params: { 
-            email_address: 'test@example.com', 
-            password: 'password123' 
+          post :login, params: {
+            email_address: 'test@example.com',
+            password: 'password123'
           }
         }.to change { user.reload.last_signed_in_at }
       end
 
       it 'generates valid JWT token' do
-        post :login, params: { 
-          email_address: 'test@example.com', 
-          password: 'password123' 
+        post :login, params: {
+          email_address: 'test@example.com',
+          password: 'password123'
         }
 
         token = json_response['token']
         payload = User.decode_jwt_token(token)
-        
+
         expect(payload).to be_present
         expect(payload['user_id']).to eq(user.id)
         expect(payload['email']).to eq(user.email_address)
@@ -54,9 +54,9 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
     context 'with invalid credentials' do
       it 'returns error for wrong password' do
-        post :login, params: { 
-          email_address: 'test@example.com', 
-          password: 'wrongpassword' 
+        post :login, params: {
+          email_address: 'test@example.com',
+          password: 'wrongpassword'
         }
 
         expect(response).to have_http_status(:unauthorized)
@@ -65,9 +65,9 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       end
 
       it 'returns error for non-existent user' do
-        post :login, params: { 
-          email_address: 'nonexistent@example.com', 
-          password: 'password123' 
+        post :login, params: {
+          email_address: 'nonexistent@example.com',
+          password: 'password123'
         }
 
         expect(response).to have_http_status(:unauthorized)
@@ -123,7 +123,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     context 'with invalid parameters' do
       it 'returns error for duplicate email' do
         create(:user, email_address: 'existing@example.com')
-        
+
         post :register, params: valid_registration_params.merge(
           email_address: 'existing@example.com'
         )
@@ -259,11 +259,11 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
     it 'validates token expiration' do
       expired_token = JWT.encode(
-        { 
-          user_id: user.id, 
+        {
+          user_id: user.id,
           email: user.email_address,
           role: user.role,
-          exp: 1.hour.ago.to_i 
+          exp: 1.hour.ago.to_i
         },
         User.jwt_secret_key,
         'HS256'
@@ -292,11 +292,11 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
     it 'validates user existence' do
       valid_token = JWT.encode(
-        { 
-          user_id: 99999, 
+        {
+          user_id: 99999,
           email: 'nonexistent@example.com',
           role: 'member',
-          exp: 1.hour.from_now.to_i 
+          exp: 1.hour.from_now.to_i
         },
         User.jwt_secret_key,
         'HS256'
@@ -314,9 +314,9 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     let!(:user) { create(:user) }
 
     it 'includes consistent user data structure' do
-      post :login, params: { 
-        email_address: user.email_address, 
-        password: 'password123' 
+      post :login, params: {
+        email_address: user.email_address,
+        password: 'password123'
       }
 
       user_data = json_response['user']
@@ -325,13 +325,13 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     it 'excludes sensitive information' do
-      post :login, params: { 
-        email_address: user.email_address, 
-        password: 'password123' 
+      post :login, params: {
+        email_address: user.email_address,
+        password: 'password123'
       }
 
       user_data = json_response['user']
       expect(user_data.keys).not_to include('password_digest')
     end
   end
-end 
+end

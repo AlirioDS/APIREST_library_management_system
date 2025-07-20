@@ -11,14 +11,14 @@ class CreateBooks < ActiveRecord::Migration[8.0]
       t.integer :total_copies, default: 1, null: false
       t.integer :available_copies, default: 1, null: false
       t.string :status, default: 'available', null: false
-      
+
       t.timestamps
     end
-    
+
     add_index :books, :title
     add_index :books, :author
     add_index :books, :isbn, unique: true
     add_index :books, :genre
     add_index :books, :status
   end
-end 
+end

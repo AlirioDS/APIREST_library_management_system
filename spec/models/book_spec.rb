@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Book, type: :model do
   subject { build(:book) }
-  
+
   describe 'associations' do
     it { should have_many(:borrowings).dependent(:destroy) }
     it { should have_many(:borrowers).through(:borrowings).source(:user) }
@@ -43,7 +43,7 @@ RSpec.describe Book, type: :model do
     it 'defines status enum with string values' do
       expect(Book.statuses).to eq({
         'available' => 'available',
-        'checked_out' => 'checked_out', 
+        'checked_out' => 'checked_out',
         'maintenance' => 'maintenance',
         'lost' => 'lost'
       })
@@ -241,4 +241,4 @@ RSpec.describe Book, type: :model do
       expect(book.isbn).to eq('9780139999994'.upcase)
     end
   end
-end 
+end

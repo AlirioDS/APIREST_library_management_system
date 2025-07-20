@@ -47,4 +47,4 @@ module AuthenticationHelpers
     expect(response).to have_http_status(status)
     expect(json_response[error_key]).to be_present
   end
-end 
+end

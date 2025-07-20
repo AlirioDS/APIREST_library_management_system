@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::BooksController, type: :controller do
   describe 'GET #index' do
     let!(:book1) { create(:book, title: 'Test Book 1', author: 'Author 1') }
-    let!(:book2) { create(:book, title: 'Test Book 2', author: 'Author 2') }  
+    let!(:book2) { create(:book, title: 'Test Book 2', author: 'Author 2') }
     let!(:book3) { create(:book, title: 'Test Book 3', author: 'Author 3') }
 
     context 'without authentication' do
@@ -11,7 +11,7 @@ RSpec.describe Api::V1::BooksController, type: :controller do
         get :index
         expect(response).to have_http_status(:ok)
         expect(json_response['books']).to be_present
-        
+
         # Check that our specific books are included (instead of exact count)
         book_titles = json_response['books'].map { |book| book['title'] }
         expect(book_titles).to include('Test Book 1', 'Test Book 2', 'Test Book 3')
@@ -263,7 +263,7 @@ RSpec.describe Api::V1::BooksController, type: :controller do
 
     it 'includes correct book data structure' do
       get :show, params: { id: book.id }
-      
+
       book_data = json_response['book']
       expect(book_data).to include(
         'id', 'title', 'author', 'genre', 'status',
@@ -274,9 +274,9 @@ RSpec.describe Api::V1::BooksController, type: :controller do
 
     it 'includes helper methods in detailed view' do
       get :show, params: { id: book.id }
-      
+
       book_data = json_response['book']
       expect(book_data).to include('full_title', 'published_info')
     end
   end
-end 
+end
