@@ -1,33 +1,195 @@
-# Create default users for development and testing
+# Create default users for Library Management System
 
-# Admin user
-admin = User.find_or_create_by(email_address: 'admin@example.com') do |user|
+puts "🏛️ Creating Library Management System seed data..."
+
+# Librarian users
+librarian1 = User.find_or_create_by(email_address: 'librarian@library.com') do |user|
   user.password = 'password123'
   user.password_confirmation = 'password123'
-  user.first_name = 'Admin'
-  user.last_name = 'User'
-  user.role = 'admin'
+  user.first_name = 'Sarah'
+  user.last_name = 'Johnson'
+  user.role = 'librarian'
 end
 
-# Editor user
-editor = User.find_or_create_by(email_address: 'editor@example.com') do |user|
+librarian2 = User.find_or_create_by(email_address: 'head.librarian@library.com') do |user|
   user.password = 'password123'
   user.password_confirmation = 'password123'
-  user.first_name = 'Editor'
-  user.last_name = 'User'
-  user.role = 'editor'
+  user.first_name = 'Michael'
+  user.last_name = 'Chen'
+  user.role = 'librarian'
 end
 
-# Regular user
-regular_user = User.find_or_create_by(email_address: 'user@example.com') do |user|
+# Member users
+member1 = User.find_or_create_by(email_address: 'member1@example.com') do |user|
   user.password = 'password123'
   user.password_confirmation = 'password123'
-  user.first_name = 'Regular'
-  user.last_name = 'User'
-  user.role = 'user'
+  user.first_name = 'Emma'
+  user.last_name = 'Davis'
+  user.role = 'member'
 end
 
-puts "✅ Seed data created successfully!"
-puts "📧 Admin: admin@example.com (password: password123)"
-puts "📧 Editor: editor@example.com (password: password123)"
-puts "📧 User: user@example.com (password: password123)"
+member2 = User.find_or_create_by(email_address: 'member2@example.com') do |user|
+  user.password = 'password123'
+  user.password_confirmation = 'password123'
+  user.first_name = 'James'
+  user.last_name = 'Wilson'
+  user.role = 'member'
+end
+
+member3 = User.find_or_create_by(email_address: 'student@university.edu') do |user|
+  user.password = 'password123'
+  user.password_confirmation = 'password123'
+  user.first_name = 'Alice'
+  user.last_name = 'Brown'
+  user.role = 'member'
+end
+
+puts "✅ Created users:"
+puts "👑 Librarians: librarian@library.com, head.librarian@library.com"
+puts "👤 Members: member1@example.com, member2@example.com, student@university.edu"
+
+# Sample Books
+books_data = [
+  {
+    title: "To Kill a Mockingbird",
+    author: "Harper Lee",
+    isbn: "9780061120084",
+    description: "A classic novel about racial injustice and childhood in the American South.",
+    genre: "Fiction",
+    publication_year: 1960,
+    publisher: "Harper Perennial",
+    total_copies: 5,
+    available_copies: 3,
+    status: "available"
+  },
+  {
+    title: "1984",
+    author: "George Orwell",
+    isbn: "9780451524935",
+    description: "A dystopian social science fiction novel about totalitarian control.",
+    genre: "Science Fiction",
+    publication_year: 1949,
+    publisher: "Signet Classics",
+    total_copies: 4,
+    available_copies: 2,
+    status: "available"
+  },
+  {
+    title: "Pride and Prejudice",
+    author: "Jane Austen",
+    isbn: "9780141439518",
+    description: "A romantic novel about manners, marriage, and money in Georgian England.",
+    genre: "Romance",
+    publication_year: 1813,
+    publisher: "Penguin Classics",
+    total_copies: 3,
+    available_copies: 3,
+    status: "available"
+  },
+  {
+    title: "The Great Gatsby",
+    author: "F. Scott Fitzgerald",
+    isbn: "9780743273565",
+    description: "A classic American novel set in the Jazz Age.",
+    genre: "Fiction",
+    publication_year: 1925,
+    publisher: "Scribner",
+    total_copies: 6,
+    available_copies: 4,
+    status: "available"
+  },
+  {
+    title: "The Catcher in the Rye",
+    author: "J.D. Salinger",
+    isbn: "9780316769174",
+    description: "A coming-of-age story about teenage rebellion and alienation.",
+    genre: "Fiction",
+    publication_year: 1951,
+    publisher: "Little, Brown and Company",
+    total_copies: 2,
+    available_copies: 0,
+    status: "checked_out"
+  },
+  {
+    title: "Dune",
+    author: "Frank Herbert",
+    isbn: "9780441172719",
+    description: "A science fiction epic about politics, religion, and ecology on a desert planet.",
+    genre: "Science Fiction",
+    publication_year: 1965,
+    publisher: "Ace Books",
+    total_copies: 3,
+    available_copies: 2,
+    status: "available"
+  },
+  {
+    title: "The Lord of the Rings",
+    author: "J.R.R. Tolkien",
+    isbn: "9780544003415",
+    description: "An epic fantasy trilogy about the quest to destroy the One Ring.",
+    genre: "Fantasy",
+    publication_year: 1954,
+    publisher: "Houghton Mifflin",
+    total_copies: 4,
+    available_copies: 3,
+    status: "available"
+  },
+  {
+    title: "Introduction to Algorithms",
+    author: "Thomas H. Cormen",
+    isbn: "9780262033848",
+    description: "A comprehensive textbook on computer algorithms.",
+    genre: "Computer Science",
+    publication_year: 2009,
+    publisher: "MIT Press",
+    total_copies: 2,
+    available_copies: 1,
+    status: "available"
+  },
+  {
+    title: "Clean Code",
+    author: "Robert C. Martin",
+    isbn: "9780132350884",
+    description: "A handbook of agile software craftsmanship.",
+    genre: "Programming",
+    publication_year: 2008,
+    publisher: "Prentice Hall",
+    total_copies: 3,
+    available_copies: 2,
+    status: "available"
+  },
+  {
+    title: "The Design of Everyday Things",
+    author: "Don Norman",
+    isbn: "9780465050659",
+    description: "A book about user-centered design and usability.",
+    genre: "Design",
+    publication_year: 2013,
+    publisher: "Basic Books",
+    total_copies: 2,
+    available_copies: 0,
+    status: "maintenance"
+  }
+]
+
+books_data.each do |book_attrs|
+  Book.find_or_create_by(isbn: book_attrs[:isbn]) do |book|
+    book.assign_attributes(book_attrs)
+  end
+end
+
+puts "📚 Created #{Book.count} sample books"
+puts "📖 Available books: #{Book.available.count}"
+puts "📋 Book genres: #{Book.distinct.pluck(:genre).compact.sort.join(', ')}"
+
+puts "\n🎉 Library Management System seed data created successfully!"
+puts "\n🔑 Login credentials:"
+puts "👑 Librarian: librarian@library.com (password: password123)"
+puts "👑 Head Librarian: head.librarian@library.com (password: password123)"
+puts "👤 Member: member1@example.com (password: password123)"
+puts "👤 Student: student@university.edu (password: password123)"
+puts "\n📋 System Features:"
+puts "✅ Only librarians can add/edit/delete books"
+puts "✅ Both librarians and members can view and search books"
+puts "✅ Role-based access control with Pundit"
+puts "✅ JWT authentication with refresh tokens"

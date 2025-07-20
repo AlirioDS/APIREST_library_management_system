@@ -1,8 +1,6 @@
 class ApplicationController < ActionController::API
   include Pundit::Authorization
   
-  before_action :authenticate_user!
-  
   # Handle authorization errors
   rescue_from Pundit::NotAuthorizedError, with: :handle_unauthorized
   
@@ -35,6 +33,18 @@ class ApplicationController < ActionController::API
   
   def user_signed_in?
     current_user.present?
+  end
+  
+  # Optional authentication - sets current_user if token provided, but doesn't fail if not
+  def set_current_user_optional
+    token = extract_token_from_header
+    
+    if token.present?
+      payload = User.decode_jwt_token(token)
+      @current_user = User.find_by(id: payload['user_id']) if payload
+    end
+    
+    # Continue regardless of authentication status
   end
   
   private

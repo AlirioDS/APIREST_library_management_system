@@ -1,326 +1,564 @@
-# 🚀 Rails API Boilerplate
+# 📚 Rails Library Management API
 
-Rails 8 API con **PostgreSQL**, **Solid Queue**, **Solid Cache** y **Solid Cable** usando Docker para desarrollo.
+> **A complete Library Management System built with Rails 8, JWT authentication, and PostgreSQL**
 
-> **🏃‍♂️ ¿Quieres empezar YA?** → [QUICK_START.md](QUICK_START.md) (30 segundos)  
-> **📁 ¿Qué hace cada archivo?** → [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)  
-> **🔐 ¿Problemas con credenciales?** → [README_CREDENTIALS.md](README_CREDENTIALS.md)
+[![Rails](https://img.shields.io/badge/Rails-8.0-red.svg)](https://rubyonrails.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17.5-blue.svg)](https://postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com/)
+[![JWT](https://img.shields.io/badge/Auth-JWT-green.svg)](https://jwt.io/)
 
-## 📋 **Inicio Rápido (5 minutos)**
+---
 
-### 1. **Clonar y Configurar**
+## 🎯 **Features**
+
+### **📚 Library Management**
+- **Book Inventory** - Complete CRUD operations for books
+- **Advanced Search** - Search by title, author, genre, or ISBN
+- **Status Tracking** - Available, checked out, maintenance, lost
+- **Copy Management** - Track total vs available copies
+
+### **👥 User Management** 
+- **Role-Based Access** - Librarians and Members with different permissions
+- **JWT Authentication** - Secure stateless authentication with refresh tokens
+- **User Profiles** - Personal information and borrowing history
+
+### **📖 Borrowing System**
+- **Book Borrowing** - Members can borrow available books
+- **Return Processing** - Track due dates and process returns
+- **Overdue Management** - Automatic overdue status updates
+- **Borrowing History** - Complete audit trail of all transactions
+
+### **📊 Dashboard & Analytics**
+- **Librarian Dashboard** - Overview of library statistics and operations
+- **Member Dashboard** - Personal borrowing status and recommendations
+- **Real-time Updates** - Live data on book availability and borrowings
+
+---
+
+## 🚀 **Quick Start**
+
+### **Prerequisites**
+- Docker & Docker Compose
+- Git
+
+### **1. Clone & Setup**
 ```bash
-git clone <repository>
+git clone <your-repository-url>
 cd rails_api_boiler_plate
 
-# Configurar variables de entorno
+# Copy environment template
 cp .env.example .env
 ```
 
-### 2. **Verificar Credenciales (Opcional)**
-Las contraseñas ya están configuradas. Si quieres cambiarlas, edita `.env`:
+### **2. Start Services**
 ```bash
-# Opcional: Cambiar contraseñas (deben coincidir)
-DATABASE_PASSWORD=tu_password_aqui
-TEST_DATABASE_PASSWORD=tu_password_aqui
-POSTGRES_PASSWORD=tu_password_aqui
-```
-
-### 3. **Iniciar Servicios**
-```bash
+# Start all services with Docker
 docker compose -f docker-compose.development.yml up --build
-```
 
-**¡Listo!** Tu API estará en http://localhost:3000
-
----
-
-## 🏗️ **Arquitectura del Sistema**
-
-### **🐘 Base de Datos**
-- **PostgreSQL 17.5** con optimizaciones para desarrollo
-- **Usuario único**: `postgres` (máxima simplicidad)
-- **Bases separadas**: `bd_template_dev` (dev) y `rails_api_test` (tests)
-
-### **⚡ Background Jobs** 
-- **Solid Queue** - Procesamiento de trabajos en background
-- **Worker escalable**: `docker compose up --scale queue=3`
-
-### **🔐 Estrategia de Credenciales Híbrida**
-- **Development/Tests**: Variables de entorno (`.env`)
-- **Production**: Rails credentials cifradas
-
----
-
-## 📁 **Estructura del Proyecto**
-
-```
-rails_api_boiler_plate/
-├── 🐳 docker-compose.development.yml  # Orquestación de servicios
-├── 🔐 .env                           # Variables de entorno (NO subir a git)
-├── 📝 .env.example                   # Template de variables
-├── 🗄️ config/
-│   ├── database.yml                  # Configuración de BD híbrida
-│   ├── credentials/                  # Solo ejemplos para producción
-│   ├── queue.yml                     # Configuración Solid Queue
-│   └── recurring.yml                 # Tareas programadas
-├── 📜 script/                        # Solo .keep (simplificado)
-└── 📚 README_CREDENTIALS.md          # Documentación detallada
-```
-
----
-
-## 🚀 **Comandos Principales**
-
-### **Desarrollo**
-```bash
-# Iniciar servicios
-docker compose -f docker-compose.development.yml up
-
-# En segundo plano
+# Or run in background
 docker compose -f docker-compose.development.yml up -d
-
-# Ver logs
-docker compose -f docker-compose.development.yml logs -f
-
-# Parar servicios
-docker compose -f docker-compose.development.yml down
 ```
 
-### **Base de Datos**
+### **3. Verify Installation**
 ```bash
-# Conectar a la BD de desarrollo
-docker compose exec db-postgres psql -U postgres -d bd_template_dev
+# Check API is running
+curl http://localhost:3000
 
-# Resetear BD (elimina datos)
-docker compose -f docker-compose.development.yml down -v
-docker compose -f docker-compose.development.yml up --build
+# Should return: Rails welcome page or API status
 ```
+
+**🎉 Your API is now running at `http://localhost:3000`**
+
+---
+
+## 📡 **API Documentation**
+
+### **Base URL**
+```
+http://localhost:3000/api/v1
+```
+
+### **Authentication**
+Include JWT token in all authenticated requests:
+```http
+Authorization: Bearer {your_jwt_token}
+```
+
+---
+
+## 🔐 **Authentication Endpoints**
+
+### **Register User**
+```http
+POST /api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email_address": "user@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "first_name": "John",
+  "last_name": "Doe"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "message": "Registration successful",
+  "user": {
+    "id": 1,
+    "email_address": "user@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "role": "member"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### **Login**
+```http
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email_address": "user@example.com",
+  "password": "password123"
+}
+```
+
+### **Refresh Token**
+```http
+POST /api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "your_refresh_token_here"
+}
+```
+
+### **Logout**
+```http
+DELETE /api/v1/auth/logout
+Authorization: Bearer {token}
+```
+
+### **Get Current User**
+```http
+GET /api/v1/auth/me
+Authorization: Bearer {token}
+```
+
+---
+
+## 📚 **Books Endpoints**
+
+### **Get All Books**
+```http
+GET /api/v1/books
+```
+
+**Optional Query Parameters:**
+- `search` - Search by title, author, or genre
+- `genre` - Filter by genre
+- `author` - Filter by author
+- `status` - Filter by availability status
+
+**Example:**
+```bash
+curl "http://localhost:3000/api/v1/books?search=programming&genre=Technology"
+```
+
+### **Get Single Book**
+```http
+GET /api/v1/books/{id}
+```
+
+### **Create Book** (Librarians only)
+```http
+POST /api/v1/books
+Authorization: Bearer {librarian_token}
+Content-Type: application/json
+
+{
+  "title": "Clean Code",
+  "author": "Robert C. Martin",
+  "isbn": "978-0132350884",
+  "genre": "Programming",
+  "description": "A handbook of agile software craftsmanship",
+  "publication_year": 2008,
+  "publisher": "Prentice Hall",
+  "total_copies": 5,
+  "available_copies": 5
+}
+```
+
+### **Update Book** (Librarians only)
+```http
+PATCH /api/v1/books/{id}
+Authorization: Bearer {librarian_token}
+Content-Type: application/json
+```
+
+### **Delete Book** (Librarians only)
+```http
+DELETE /api/v1/books/{id}
+Authorization: Bearer {librarian_token}
+```
+
+### **Search Books**
+```http
+GET /api/v1/books/search?q=programming
+```
+
+---
+
+## 📖 **Borrowing Endpoints**
+
+### **Borrow Book** (Members only)
+```http
+POST /api/v1/books/{book_id}/borrow
+Authorization: Bearer {member_token}
+```
+
+### **Return Book**
+```http
+PATCH /api/v1/borrowings/{borrowing_id}/return
+Authorization: Bearer {token}
+```
+
+### **Get User's Borrowings**
+```http
+GET /api/v1/borrowings
+Authorization: Bearer {token}
+```
+
+### **Get All Borrowings** (Librarians only)
+```http
+GET /api/v1/borrowings
+Authorization: Bearer {librarian_token}
+```
+
+**Query Parameters:**
+- `status` - Filter by borrowing status (borrowed, returned, overdue)
+- `user_id` - Filter by user ID (librarians only)
+- `page` - Page number for pagination
+- `per_page` - Items per page (max 100)
+
+---
+
+## 👥 **User Management Endpoints**
+
+### **Get All Users** (Librarians only)
+```http
+GET /api/v1/users
+Authorization: Bearer {librarian_token}
+```
+
+### **Get User Details** (Own profile or librarians only)
+```http
+GET /api/v1/users/{id}
+Authorization: Bearer {token}
+```
+
+### **Update User Role** (Librarians only)
+```http
+PATCH /api/v1/users/{id}/change_role
+Authorization: Bearer {librarian_token}
+Content-Type: application/json
+
+{
+  "role": "librarian"
+}
+```
+
+### **Get User's Borrowings** (Own borrowings or librarians only)
+```http
+GET /api/v1/users/{id}/borrowings
+Authorization: Bearer {token}
+```
+
+---
+
+## 📊 **Dashboard Endpoints**
+
+### **Librarian Dashboard** (Librarians only)
+```http
+GET /api/v1/dashboard/librarian
+Authorization: Bearer {librarian_token}
+```
+
+**Response includes:**
+- Total books, users, and active borrowings
+- Books due today and overdue
+- Popular books and recent activity
+- System statistics
+
+### **Member Dashboard** (Members only)
+```http
+GET /api/v1/dashboard/member
+Authorization: Bearer {member_token}
+```
+
+**Response includes:**
+- User's active borrowings
+- Due dates and overdue items
+- Borrowing history
+- Recommended books
+
+---
+
+## 🔧 **Configuration**
+
+### **Environment Variables**
+
+Create `.env` file with:
+
+```bash
+# Database Configuration
+DATABASE_HOST=db-postgres
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASSWORD=postgres_dev_2024
+DATABASE_NAME=bd_template_dev
+
+# Test Database
+TEST_DATABASE_PASSWORD=postgres_dev_2024
+TEST_DATABASE_NAME=rails_api_test
+
+# PostgreSQL Container
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres_dev_2024
+POSTGRES_DB=bd_template_dev
+
+# Rails Configuration
+RAILS_ENV=development
+RAILS_MAX_THREADS=5
+
+# Background Jobs
+JOB_CONCURRENCY=2
+
+# Security (generate with: rails secret)
+SECRET_KEY_BASE=your_secret_key_here
+JWT_SECRET=your_jwt_secret_here
+```
+
+### **User Roles**
+
+| Role | Permissions |
+|------|-------------|
+| **Member** | Browse books, borrow/return books, view personal dashboard |
+| **Librarian** | All member permissions + manage books, manage users, view all borrowings, access admin dashboard |
+
+### **Default Users** (created by `db:seed`)
+
+```ruby
+# Librarian Account
+email: "librarian@library.com"
+password: "password123"
+
+# Member Account  
+email: "member@library.com"
+password: "password123"
+```
+
+---
+
+## 🧪 **Testing**
+
+### **Run All Tests**
+```bash
+docker exec -it rails_api_boiler_plate-rails-api-1 bundle exec rspec
+```
+
+### **Run Specific Tests**
+```bash
+# Model tests
+docker exec -it rails_api_boiler_plate-rails-api-1 bundle exec rspec spec/models/
+
+# Controller tests
+docker exec -it rails_api_boiler_plate-rails-api-1 bundle exec rspec spec/controllers/
+
+# Specific test file
+docker exec -it rails_api_boiler_plate-rails-api-1 bundle exec rspec spec/models/user_spec.rb
+```
+
+### **Test Coverage**
+Tests are included for:
+- ✅ **Models** - User, Book, Borrowing validations and associations
+- ✅ **Controllers** - All API endpoints with authentication/authorization
+- ✅ **Policies** - Pundit authorization rules
+- ✅ **Requests** - Integration tests for full API workflows
+- ✅ **Factories** - FactoryBot for test data generation
+
+---
+
+## 🔧 **Development**
 
 ### **Rails Console**
 ```bash
-# Console de Rails
-docker compose exec rails-api bin/rails console
-
-# Ejecutar comando Rails
-docker compose exec rails-api bin/rails db:migrate
+docker exec -it rails_api_boiler_plate-rails-api-1 bundle exec rails console
 ```
 
-### **Tests**
+### **Database Operations**
 ```bash
-# Ejecutar tests
-docker compose exec rails-api bin/rails test
+# Run migrations
+docker exec -it rails_api_boiler_plate-rails-api-1 bundle exec rails db:migrate
 
-# Tests con cobertura
-docker compose exec rails-api bin/rails test:system
+# Seed database
+docker exec -it rails_api_boiler_plate-rails-api-1 bundle exec rails db:seed
+
+# Reset database (⚠️ destroys data)
+docker exec -it rails_api_boiler_plate-rails-api-1 bundle exec rails db:reset
 ```
 
-### **Queue Workers**
+### **View Logs**
 ```bash
-# Ver trabajos en cola
-docker compose exec rails-api bin/rails runner "puts SolidQueue::Job.count"
+# All services
+docker compose -f docker-compose.development.yml logs -f
 
-# Escalar workers
+# Specific service
+docker compose -f docker-compose.development.yml logs -f rails-api
+```
+
+### **Background Jobs**
+```bash
+# Check job queue
+docker exec -it rails_api_boiler_plate-rails-api-1 bundle exec rails runner "puts SolidQueue::Job.count"
+
+# Scale workers
 docker compose up --scale queue=3 -d
 ```
 
 ---
 
-## 🔧 **Configuración Avanzada**
+## 🏗️ **Architecture**
 
-### **Variables de Entorno Importantes**
+### **Services**
+- **rails-api** (Port 3000) - Main Rails application
+- **db-postgres** (Port 5432) - PostgreSQL database
+- **queue** - Solid Queue background job processor
 
-| Variable | Descripción | Default |
-|----------|-------------|---------|
-| `DATABASE_PASSWORD` | Contraseña de Rails → PostgreSQL | `postgres_dev_2024` |
-| `POSTGRES_PASSWORD` | Contraseña del container PostgreSQL | **Debe coincidir con DATABASE_PASSWORD** |
-| `JOB_CONCURRENCY` | Workers de Solid Queue | `2` |
-| `RAILS_MAX_THREADS` | Threads de Puma | `5` |
-| `RAILS_LOG_LEVEL` | Nivel de logging | `info` |
+### **Tech Stack**
+- **Backend**: Rails 8.0 API-only mode
+- **Database**: PostgreSQL 17.5 with optimizations
+- **Authentication**: JWT with refresh tokens
+- **Authorization**: Pundit for role-based access control
+- **Background Jobs**: Solid Queue
+- **Testing**: RSpec, FactoryBot, Shoulda Matchers
+- **Containerization**: Docker & Docker Compose
 
-### **Optimizaciones de PostgreSQL**
-El container incluye optimizaciones automáticas:
-- `shared_buffers=128MB` - Memoria compartida
-- `effective_cache_size=512MB` - Cache estimado
-- `synchronous_commit=off` - Mejor rendimiento para jobs
-- `autovacuum_naptime=20s` - Limpieza frecuente
+### **Key Libraries**
+- `bcrypt` - Password hashing
+- `jwt` - JSON Web Token handling
+- `pundit` - Authorization policies
+- `solid_queue` - Background job processing
+- `rspec-rails` - Testing framework
+- `factory_bot_rails` - Test data factories
 
 ---
 
 ## 🐛 **Troubleshooting**
 
-### **❌ Error: "password authentication failed"**
-**Problema**: Las contraseñas en `.env` no coinciden.
-
-**Solución**:
+### **Database Connection Issues**
 ```bash
-# 1. Verificar que coincidan en .env:
-DATABASE_PASSWORD=tu_password
-POSTGRES_PASSWORD=tu_password  # ⚠️ Deben ser iguales
-
-# 2. Recrear containers:
+# Error: "password authentication failed"
+# Solution: Verify .env passwords match
 docker compose -f docker-compose.development.yml down -v
 docker compose -f docker-compose.development.yml up --build
 ```
 
-### **❌ Error: "relation solid_queue_processes does not exist"**
-**Problema**: Tablas de Solid Queue no están creadas.
-
-**Solución**: Ya está solucionado automáticamente en el docker-compose, pero si necesitas hacerlo manual:
+### **Port Already In Use**
 ```bash
-docker compose exec rails-api bin/rails runner "load 'db/queue_schema.rb'"
+# Change port in docker-compose.development.yml
+ports:
+  - "3001:3000"  # Use 3001 instead of 3000
 ```
 
-### **❌ Error: "duplicate key value violates unique constraint"**
-**Problema**: Race condition - ambos servicios intentan crear la BD al mismo tiempo.
-
-**Solución**: Ya está solucionado automáticamente. Si persiste:
+### **Authentication Errors**
 ```bash
-docker compose -f docker-compose.development.yml down -v
-docker compose -f docker-compose.development.yml up --build
+# Clear and regenerate JWT secrets
+# Update JWT_SECRET in .env
+echo "JWT_SECRET=$(openssl rand -hex 64)" >> .env
 ```
 
-### **❌ Los containers no arrancan**
-**Problema**: Conflictos de puertos o volúmenes.
-
-**Solución**:
+### **Background Jobs Not Processing**
 ```bash
-# Limpiar todo y empezar desde cero
+# Check Solid Queue status
+docker exec -it rails_api_boiler_plate-rails-api-1 bundle exec rails runner "puts SolidQueue::Process.count"
+
+# Restart queue service
+docker compose restart queue
+```
+
+### **Clean Installation**
+```bash
+# Remove all containers and volumes
 docker compose -f docker-compose.development.yml down -v
 docker system prune -f
 docker compose -f docker-compose.development.yml up --build
 ```
 
-### **❌ Cambios en Gemfile no se reflejan**
-**Problema**: La imagen no se reconstruyó.
+---
 
-**Solución**:
-```bash
-docker compose -f docker-compose.development.yml build --no-cache
-docker compose -f docker-compose.development.yml up
+## 📝 **API Response Formats**
+
+### **Success Response**
+```json
+{
+  "message": "Operation successful",
+  "data": { /* resource data */ },
+  "status": "success"
+}
+```
+
+### **Error Response**
+```json
+{
+  "error": "Error message",
+  "details": ["Specific error details"],
+  "status": "error"
+}
+```
+
+### **Validation Error Response**
+```json
+{
+  "error": "Validation failed",
+  "details": {
+    "email": ["can't be blank"],
+    "password": ["is too short (minimum is 8 characters)"]
+  },
+  "status": "error"
+}
 ```
 
 ---
 
-## 🔐 **Gestión de Credenciales**
+## 🚀 **Deployment**
 
-### **Para Development/Tests (Actual)**
-Usa `.env` files para máxima simplicidad:
-
+### **Environment Setup**
 ```bash
-# Editar credenciales locales
-nano .env
-
-# Cada developer tiene sus propias credenciales
-# No se suben al repositorio (.gitignore)
+# Production environment variables
+RAILS_ENV=production
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+SECRET_KEY_BASE=$(rails secret)
+JWT_SECRET=$(openssl rand -hex 64)
 ```
 
-### **Para Producción (Futuro)**
-Cuando deploys a producción, usa Rails credentials:
-
+### **Docker Production Build**
 ```bash
-# Editar credenciales de producción
-bin/rails credentials:edit
+# Build production image
+docker build -t library-api:latest .
 
-# Descomenta ejemplos en config/database.yml
-# y config/credentials.yml.enc
+# Run with production environment
+docker run -p 3000:3000 -e RAILS_ENV=production library-api:latest
 ```
 
-Más detalles en: [README_CREDENTIALS.md](README_CREDENTIALS.md)
-
 ---
 
-## 📊 **Servicios y Puertos**
+## 📄 **License**
 
-| Servicio | Puerto | Descripción |
-|----------|--------|-------------|
-| **rails-api** | 3000 | API principal de Rails |
-| **db-postgres** | 5432 | Base de datos PostgreSQL |
-| **queue** | - | Workers de Solid Queue (sin puerto) |
-
----
-
-## 🚦 **Estados de Salud**
-
-### **Verificar que todo funciona**:
-```bash
-# 1. Servicios activos
-docker compose ps
-
-# 2. API respondiendo
-curl http://localhost:3000
-
-# 3. Base de datos conectada
-docker compose exec rails-api bin/rails runner "puts ActiveRecord::Base.connection.active?"
-
-# 4. Solid Queue funcionando
-docker compose exec rails-api bin/rails runner "puts SolidQueue::Process.count"
-```
-
-### **Indicadores de salud**:
-- ✅ `rails-api` - Status "Up" y responde en puerto 3000
-- ✅ `db-postgres` - Status "Up (healthy)"  
-- ✅ `queue` - Status "Up" y logs sin errores
-
----
-
-## 🎯 **Próximos Pasos**
-
-### **Desarrollo**
-1. Crear tus modelos: `docker compose exec rails-api bin/rails generate model User`
-2. Crear controladores: `docker compose exec rails-api bin/rails generate controller api/v1/users`
-3. Agregar jobs: `docker compose exec rails-api bin/rails generate job SendEmail`
-
-### **Testing**
-1. Configurar RSpec (opcional): Agregar `rspec-rails` al Gemfile
-2. Configurar factory_bot: Para fixtures de test
-3. Configurar simplecov: Para coverage de código
-
-### **Deployment**
-1. Configurar credentials de producción
-2. Setup de CI/CD (GitHub Actions incluido)
-3. Deploy con Kamal (configuración incluida)
-
----
-
-## 📚 **Documentación Adicional**
-
-- [README_CREDENTIALS.md](README_CREDENTIALS.md) - Gestión detallada de credenciales
-- [Solid Queue Docs](https://github.com/rails/solid_queue) - Documentación oficial
-- [Rails 8 Guide](https://guides.rubyonrails.org/) - Guías de Rails
-
----
-
-## 💡 **Tips de Productividad**
-
-### **Aliases útiles**:
-```bash
-# Agregar a tu .bashrc/.zshrc
-alias dc="docker compose -f docker-compose.development.yml"
-alias rails-exec="docker compose exec rails-api"
-alias rails-logs="docker compose logs -f rails-api"
-
-# Uso:
-dc up -d
-rails-exec bin/rails console
-rails-logs
-```
-
-### **VS Code Setup**:
-- Instalar extensión "Dev Containers"
-- Usar "Remote - Containers" para desarrollo dentro del container
-- Configurar debugger para Ruby
-
----
-
-## 🤝 **Contribuir**
-
-1. Fork el proyecto
-2. Crea una feature branch: `git checkout -b feature/nueva-feature`
-3. Commit tus cambios: `git commit -m 'Agregar nueva feature'`
-4. Push a la branch: `git push origin feature/nueva-feature`
-5. Abre un Pull Request
-
----
-
-**¡Happy coding! 🎉**
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -10,9 +10,47 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_20_174140) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_20_174142) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "books", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "author", null: false
+    t.string "isbn"
+    t.text "description"
+    t.string "genre"
+    t.integer "publication_year"
+    t.string "publisher"
+    t.integer "total_copies", default: 1, null: false
+    t.integer "available_copies", default: 1, null: false
+    t.string "status", default: "available", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author"], name: "index_books_on_author"
+    t.index ["genre"], name: "index_books_on_genre"
+    t.index ["isbn"], name: "index_books_on_isbn", unique: true
+    t.index ["status"], name: "index_books_on_status"
+    t.index ["title"], name: "index_books_on_title"
+  end
+
+  create_table "borrowings", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "book_id", null: false
+    t.datetime "borrowed_at", null: false
+    t.datetime "due_at", null: false
+    t.datetime "returned_at"
+    t.string "status", default: "borrowed", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["book_id"], name: "index_borrowings_on_book_id"
+    t.index ["borrowed_at"], name: "index_borrowings_on_borrowed_at"
+    t.index ["due_at"], name: "index_borrowings_on_due_at"
+    t.index ["status"], name: "index_borrowings_on_status"
+    t.index ["user_id", "book_id", "returned_at"], name: "index_borrowings_on_user_book_active", unique: true, where: "(returned_at IS NULL)"
+    t.index ["user_id", "book_id"], name: "index_borrowings_on_user_id_and_book_id"
+    t.index ["user_id"], name: "index_borrowings_on_user_id"
+  end
 
   create_table "sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -157,6 +195,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_174140) do
     t.index ["role"], name: "index_users_on_role"
   end
 
+  add_foreign_key "borrowings", "books"
+  add_foreign_key "borrowings", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

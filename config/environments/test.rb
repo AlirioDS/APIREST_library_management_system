@@ -50,4 +50,8 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+  
+  # Disable host authorization for tests to avoid blocked host errors
+  config.hosts.clear
+  config.action_dispatch.show_exceptions = :rescuable
 end

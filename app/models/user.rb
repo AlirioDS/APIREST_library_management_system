@@ -1,8 +1,15 @@
 class User < ApplicationRecord
   has_secure_password
+  has_many :sessions, dependent: :destroy
+  has_many :borrowings, dependent: :destroy
+  has_many :borrowed_books, through: :borrowings, source: :book
   
-  # Roles enumeration
-  enum :role, { user: 'user', admin: 'admin', editor: 'editor' }, default: 'user'
+  # Roles enumeration for Library System
+  enum :role, { member: 'member', librarian: 'librarian' }, default: 'member'
+  
+  # Scopes
+  scope :member, -> { where(role: 'member') }
+  scope :librarian, -> { where(role: 'librarian') }
   
   # Validations
   validates :email_address, presence: true, uniqueness: { case_sensitive: false }
@@ -40,17 +47,37 @@ class User < ApplicationRecord
     nil
   end
   
-  # Role checks
-  def admin?
-    role == 'admin'
+  # Role checks for Library System
+  def librarian?
+    role == 'librarian'
   end
   
-  def editor?
-    role == 'editor'
+  def member?
+    role == 'member'
   end
   
-  def user?
-    role == 'user'
+  # Borrowing helper methods
+  def active_borrowings
+    borrowings.active
+  end
+  
+  def can_borrow_book?(book)
+    return false unless member?
+    return false unless book.available?
+    return false if has_borrowed_book?(book)
+    true
+  end
+  
+  def has_borrowed_book?(book)
+    borrowings.active.exists?(book: book)
+  end
+  
+  def overdue_borrowings
+    borrowings.overdue
+  end
+  
+  def borrowings_count
+    borrowings.active.count
   end
   
   private

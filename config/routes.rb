@@ -19,7 +19,38 @@ Rails.application.routes.draw do
       resources :users do
         member do
           patch :change_role
+          get :borrowings, to: 'borrowings#user_borrowings'
         end
+      end
+      
+      # Book management routes
+      resources :books do
+        member do
+          patch :manage_status
+          post :borrow, to: 'borrowings#borrow_book'
+          get :borrowings, to: 'borrowings#book_borrowings'
+        end
+        collection do
+          get :search
+        end
+      end
+      
+      # Borrowing management routes
+      resources :borrowings, only: [:index, :show] do
+        member do
+          patch :return, to: 'borrowings#return_book'
+        end
+      end
+      
+      # Direct borrowing action routes
+      post 'borrowings/borrow_book', to: 'borrowings#borrow_book'
+      get 'borrowings/user_borrowings', to: 'borrowings#user_borrowings'
+      get 'borrowings/book_borrowings', to: 'borrowings#book_borrowings'
+      
+      # Dashboard routes
+      scope :dashboard do
+        get :librarian, to: 'dashboard#librarian'
+        get :member, to: 'dashboard#member'
       end
     end
   end

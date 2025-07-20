@@ -1,5 +1,5 @@
 class Api::V1::AuthenticationController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:login, :register, :refresh]
+  before_action :authenticate_user!, only: [:logout, :me]
   
   # POST /api/v1/auth/login
   def login
@@ -83,7 +83,10 @@ class Api::V1::AuthenticationController < ApplicationController
   private
   
   def user_params
-    params.permit(:email_address, :password, :password_confirmation, :first_name, :last_name, :role)
+    permitted = [:email_address, :password, :password_confirmation, :first_name, :last_name]
+    # Only librarians can set roles during registration (for creating other librarians)
+    permitted << :role if current_user&.librarian?
+    params.permit(permitted)
   end
   
   def user_data(user)

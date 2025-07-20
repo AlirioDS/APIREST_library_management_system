@@ -31,7 +31,7 @@ class ApplicationPolicy
   end
 
   def destroy?
-    user&.admin?
+    user&.librarian?
   end
 
   class Scope

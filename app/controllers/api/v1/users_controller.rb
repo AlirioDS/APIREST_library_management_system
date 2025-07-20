@@ -1,4 +1,5 @@
 class Api::V1::UsersController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_user, only: [:show, :update, :destroy, :change_role]
 
   # GET /api/v1/users
@@ -97,14 +98,14 @@ class Api::V1::UsersController < ApplicationController
 
   def user_params
     permitted = [:email_address, :password, :password_confirmation, :first_name, :last_name]
-    permitted << :role if current_user&.admin?
+    permitted << :role if current_user&.librarian?
     params.permit(permitted)
   end
 
   def user_update_params
     permitted = [:first_name, :last_name]
-    permitted << :email_address if current_user&.admin? || current_user == @user
-    permitted << :role if current_user&.admin?
+    permitted << :email_address if current_user&.librarian? || current_user == @user
+    permitted << :role if current_user&.librarian?
     params.permit(permitted)
   end
 
