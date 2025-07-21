@@ -48,6 +48,9 @@ puts "✅ Created users:"
 puts "👑 Librarians: librarian@library.com, head.librarian@library.com"
 puts "👤 Members: member1@example.com, member2@example.com, student@university.edu"
 
+# Clean up previous borrowings to avoid duplicates on re-seed
+Borrowing.destroy_all
+
 # Sample Books
 books_data = [
   {
@@ -178,7 +181,114 @@ books_data.each do |book_attrs|
   end
 end
 
+# Reset available copies before creating new borrowings
+Book.all.each do |book|
+  book.update_column(:available_copies, book.total_copies)
+end
+
 puts "📚 Created #{Book.count} sample books"
+
+# Sample Borrowings
+puts "🔄 Creating sample borrowings..."
+
+begin
+  # Member 1: Emma Davis (member1@example.com)
+  emma = User.find_by!(email_address: 'member1@example.com')
+  book1 = Book.find_by!(title: 'To Kill a Mockingbird')
+  book2 = Book.find_by!(title: '1984')
+  book3 = Book.find_by!(title: 'The Great Gatsby')
+
+  # 1. Overdue book
+  Borrowing.create!(
+    user: emma,
+    book: book1,
+    borrowed_at: 3.weeks.ago,
+    due_at: 1.week.ago,
+    status: 'overdue'
+  )
+
+  # 2. Active (current) borrowing
+  Borrowing.create!(
+    user: emma,
+    book: book2,
+    borrowed_at: 1.week.ago,
+    due_at: 1.week.from_now
+  )
+
+  # 3. Returned book for history
+  Borrowing.create!(
+    user: emma,
+    book: Book.find_by!(title: 'The Lord of the Rings'),
+    borrowed_at: 2.months.ago,
+    due_at: 6.weeks.ago,
+    returned_at: 5.weeks.ago,
+    status: 'returned'
+  )
+
+  # Member 2: James Wilson (member2@example.com)
+  james = User.find_by!(email_address: 'member2@example.com')
+  book4 = Book.find_by!(title: 'Pride and Prejudice')
+  book5 = Book.find_by!(title: 'Dune')
+
+  # 4. Returned book
+  Borrowing.create!(
+    user: james,
+    book: book4,
+    borrowed_at: 1.month.ago,
+    due_at: 2.weeks.ago,
+    returned_at: 1.week.ago,
+    status: 'returned'
+  )
+  
+  # 5. Another active borrowing for a different user
+  Borrowing.create!(
+    user: james,
+    book: book5,
+    borrowed_at: 5.days.ago,
+    due_at: 9.days.from_now
+  )
+
+  # 6. More history for James
+  Borrowing.create!(
+    user: james,
+    book: Book.find_by!(title: 'The Great Gatsby'),
+    borrowed_at: 3.months.ago,
+    due_at: 10.weeks.ago,
+    returned_at: 9.weeks.ago,
+    status: 'returned'
+  )
+
+  # Member 3: Alice Brown (student@university.edu) - New history
+  alice = User.find_by!(email_address: 'student@university.edu')
+  
+  # 7. Returned book for Alice
+  Borrowing.create!(
+    user: alice,
+    book: Book.find_by!(title: 'Clean Code'),
+    borrowed_at: 6.weeks.ago,
+    due_at: 4.weeks.ago,
+    returned_at: 3.weeks.ago,
+    status: 'returned'
+  )
+
+  # 8. Active borrowing for Alice
+  Borrowing.create!(
+    user: alice,
+    book: Book.find_by!(title: 'Introduction to Algorithms'),
+    borrowed_at: 2.days.ago,
+    due_at: 12.days.from_now
+  )
+
+  puts "✅ Created #{Borrowing.count} sample borrowings."
+  puts "    - #{Borrowing.overdue.count} overdue book(s)."
+  puts "    - #{Borrowing.active.where.not(status: 'overdue').count} active borrowing(s)."
+  puts "    - #{Borrowing.returned.count} returned book(s)."
+
+rescue ActiveRecord::RecordNotFound => e
+  puts "⚠️  Could not create borrowings. Make sure users and books exist. Error: #{e.message}"
+end
+
+
 puts "📖 Available books: #{Book.available.count}"
 puts "📋 Book genres: #{Book.distinct.pluck(:genre).compact.sort.join(', ')}"
 
