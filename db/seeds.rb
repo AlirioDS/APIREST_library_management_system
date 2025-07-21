@@ -239,7 +239,7 @@ begin
     returned_at: 1.week.ago,
     status: 'returned'
   )
-  
+
   # 5. Another active borrowing for a different user
   Borrowing.create!(
     user: james,
@@ -260,7 +260,7 @@ begin
 
   # Member 3: Alice Brown (student@university.edu) - New history
   alice = User.find_by!(email_address: 'student@university.edu')
-  
+
   # 7. Returned book for Alice
   Borrowing.create!(
     user: alice,
