@@ -4,7 +4,7 @@ ruby "3.4.4"
 
 gem "rails", "~> 8.0.2"
 gem "pg", "~> 1.5.9"
-gem "puma", "6.6.0"
+gem "puma", "7.0.0"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "solid_cache"
 gem "solid_queue"
